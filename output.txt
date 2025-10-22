@@ -1,3 +1,87 @@
-mrsWHq4nDB338RZjArZp8jnmaJ1h6s5CaM
-tb1q4t6w4w8mukgea573y37983k22sy0dp3pkn6a7l
-tb1pxtcu3zat0yz3qtj965u9h0w28wn8vnetnsm8kvjh799kxe3scjwqcymd6u
+
+0200000000010131811cd355c357e0e01437d9bcf690df824e9ff785012b6115dfae3d8e8b36c10100000000fdffffff0220a107000000000016001485d78eb795bd9c8a21afefc8b6fdaedf718368094c08100000000000160014840ab165c9c2555d4a31b9208ad806f89d2535e20247304402207bce86d430b58bb6b79e8c1bbecdf67a530eff3bc61581a1399e0b28a741c0ee0220303d5ce926c60bf15577f2e407f28a2ef8fe8453abd4048b716e97dbb1e3a85c01210260828bc77486a55e3bc6032ccbeda915d9494eda17b4a54dbe3b24506d40e4ff43030e00
+| Field           | Value                                                              | Meaning                |
+| --------------- | ------------------------------------------------------------------ | ---------------------- |
+| Version         | `02000000`                                                         | Version = 2            |
+| Marker          | `0001`                                                             | SegWit marker          |
+| Input count     | `01`                                                               | One input              |
+| TXID            | `31811cd355c357e0e01437d9bcf690df824e9ff785012b6115dfae3d8e8b36c1` | Previous transaction   |
+| Vout            | `01000000`                                                         | Output index = 1       |
+| ScriptSig       | `00`                                                               | Empty (SegWit)         |
+| Sequence        | `fdffffff`                                                         | Final sequence         |
+| Output count    | `02`                                                               | Two outputs            |
+| Output 1 value  | `20a1070000000000`                                                 | 0.005 BTC              |
+| Output 1 script | `16001485d78eb795bd9c8a21afefc8b6fdaedf71836809`                   | P2WPKH                 |
+| Output 2 value  | `4c08100000000000`                                                 | 0.010507 BTC           |
+| Output 2 script | `160014840ab165c9c2555d4a31b9208ad806f89d2535e2`                   | P2WPKH                 |
+| Witness         | `02473044...06d40e4ff`                                             | Signature + public key |
+| Locktime        | `43030e00`                                                         | 919875                 |
+Summary:
+
+Version: 2
+
+Inputs: 1
+
+Outputs: 2
+
+SegWit: Yes
+
+Total output: 0.015507 BTC
+
+Locktime: 919,875
+from bitcoin.core import CTransaction
+from bitcoin.core import b2x
+import bitcoin
+
+bitcoin.SelectParams('testnet')
+
+def decode_transaction(hex_tx):
+    tx_bytes = bytes.fromhex(hex_tx)
+    tx = CTransaction.deserialize(tx_bytes)
+    print("Version:", tx.nVersion)
+    print("Inputs:", len(tx.vin))
+    for i, txin in enumerate(tx.vin):
+        print(f"\nInput {i+1}:")
+        print("  TXID:", b2x(txin.prevout.hash[::-1]))
+        print("  Vout:", txin.prevout.n)
+        print("  ScriptSig:", b2x(txin.scriptSig))
+        print("  Sequence:", txin.nSequence)
+    print("\nOutputs:", len(tx.vout))
+    for i, txout in enumerate(tx.vout):
+        print(f"\nOutput {i+1}:")
+        print("  Value (sats):", txout.nValue)
+        print("  ScriptPubKey:", b2x(txout.scriptPubKey))
+    print("\nLocktime:", tx.nLockTime)
+
+hex_tx = "0200000000010131811cd355c357e0e01437d9bcf690df824e9ff785012b6115dfae3d8e8b36c10100000000fdffffff0220a107000000000016001485d78eb795bd9c8a21afefc8b6fdaedf718368094c08100000000000160014840ab165c9c2555d4a31b9208ad806f89d2535e20247304402207bce86d430b58bb6b79e8c1bbecdf67a530eff3bc61581a1399e0b28a741c0ee0220303d5ce926c60bf15577f2e407f28a2ef8fe8453abd4048b716e97dbb1e3a85c01210260828bc77486a55e3bc6032ccbeda915d9494eda17b4a54dbe3b24506d40e4ff43030e00"
+decode_transaction(hex_tx)
+Version: 2
+Inputs: 1
+Input 1:
+  TXID: c1368e8e3daedf15612b0185f79f4e82df90f6bcd93714e0e057c355d31c8131
+  Vout: 1
+  ScriptSig:
+  Sequence: 4294967293
+
+Outputs: 2
+Output 1:
+  Value (sats): 500000
+  ScriptPubKey: 001485d78eb795bd9c8a21afefc8b6fdaedf71836809
+Output 2:
+  Value (sats): 1050700
+  ScriptPubKey: 0014840ab165c9c2555d4a31b9208ad806f89d2535e2
+Locktime: 919875
+Lab 1 — Setting Up Local Bitcoin Network
+
+Commands Run:
+bitcoind -regtest -daemon
+bitcoin-cli -regtest createwallet devwallet
+bitcoin-cli -regtest getnewaddress
+bitcoin-cli -regtest generatetoaddress 101 <address>
+bitcoin-cli -regtest getblockchaininfo
+
+Output Summary:
+- Chain: regtest
+- Blocks: 101
+- Wallet: devwallet created successfully
+- Network running locally
